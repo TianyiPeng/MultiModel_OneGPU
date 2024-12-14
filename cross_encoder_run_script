@@ -1,0 +1,11 @@
+torchserve --stop
+python main.py
+rm -rf model_store/cross_encoder_model.mar
+torch-model-archiver --model-name cross_encoder_model \
+    --version 1.0 \
+    --serialized-file cross_encoder_model/cross_encoder_model.pt \
+    --handler handler.py \
+    --export-path model_store \
+    --extra-files "handler.py,main.py"\
+    --force
+torchserve --start --ncs --model-store model_store --models cross_encoder_model=cross_encoder_model.mar --ts-config config.properties

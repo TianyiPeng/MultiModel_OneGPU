@@ -1,0 +1,12 @@
+torchserve --stop
+python main.py
+rm -rf model_store/simple_model.mar
+torch-model-archiver --model-name simple_model \
+    --version 1.0 \
+    --serialized-file simple_model.pt \
+    --handler handler.py \
+    --export-path model_store \
+    --extra-files handler.py
+torchserve --start --ncs --model-store model_store \
+    --models simple_model=simple_model.mar \
+    --ts-config config.properties
