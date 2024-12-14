@@ -1,5 +1,11 @@
 # MultiModel_OneGPU
-A minimal working example for serving multiple models on one GPU
+A minimal working example for serving multiple models on one GPU when the activations of each model is large but the model size is small. 
+
+There are two tricks:
+1. For each model, reduce the batchsize so that the activations of each model is reduced. 
+2. Use `torch.cuda.empty_cache()` to clear the cache after each request in the postprocessing step. 
+
+In this example, you will learn from scratch how to deploy models with TorchServe. 
 
 ## Setup
 
@@ -38,9 +44,14 @@ torch-model-archiver --model-name cross_encoder_model \
 ## Command
 
 ### Start TorchServe
-This will start two models on one GPU
+This will start one Bert model on one GPU, each inference with the batchsize of 400
 ```
 ./cross_encoder_run_script
+```
+
+This will start two Bert models on one GPU, each inference with the batchsize of 400
+```
+./cross_encoder_two_models_run_script
 ```
 
 ### Test
@@ -52,4 +63,9 @@ python request_model1.py
 This will test two models simultaneously on the GPU
 ```
 python request_two_models.py
+```
+
+### Monitor the GPU Usage
+```
+nvidia-smi
 ```
